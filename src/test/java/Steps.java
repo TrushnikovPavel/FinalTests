@@ -1,3 +1,4 @@
+import PageObject.MvideoPage;
 import com.codeborne.selenide.Selenide;
 
 public class Steps {
@@ -76,6 +77,7 @@ public class Steps {
                 Selenide.sleep(2000);
                 mvideoPage.scrollAll();
                 mvideoPage.allProductsContainsApple();
+                mvideoPage.getCollectionPriceAndConvertAndValidate();
         }
         public void checkProfile(){
                 mvideoPage.clickProfile();
@@ -84,6 +86,7 @@ public class Steps {
                 mvideoPage.buttonContinueNormal();
                 mvideoPage.forLegalPersonNormal();
         }
+
         public void productComparison(){
                 mvideoPage.searherFieldIsVisible();
                 mvideoPage.searchApple();
@@ -98,7 +101,7 @@ public class Steps {
                 mvideoPage.compareClick();
                 mvideoPage.urlEqualsUrlCompare();
                 mvideoPage.compareHeadNormal();
-                mvideoPage.rightAddProductName();
+                mvideoPage.rightAddProductNameComparison();
         }
         public void productPersonal(){
                 mvideoPage.searherFieldIsVisible();
@@ -112,7 +115,20 @@ public class Steps {
                 mvideoPage.getThirdCompareProductName();
                 mvideoPage.addAppleInPersonal();
                 mvideoPage.clickOnPersonal();
-
+                mvideoPage.urlEqualsUrlPersonal();
+                mvideoPage.personalHeadNormal();
+                mvideoPage.rightAddProductNameInPersonal();
 
 }
+        public void locationCheck(){
+                mvideoPage.clickButtonLocation();
+                mvideoPage.checkLocationLayout();
+                mvideoPage.checkLocationLayoutHead();
+                mvideoPage.clickKrasnodar();
+                Selenide.sleep(2000);
+                mvideoPage.checkLocationLayoutNotVisible();
+                mvideoPage.checkLocationLayoutHeadNotVisible();
+                mvideoPage.checkYouLocation();
+
+        }
 }

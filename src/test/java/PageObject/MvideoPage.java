@@ -1,7 +1,10 @@
+package PageObject;
+
 import com.codeborne.selenide.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.codeborne.selenide.Condition.*;
@@ -331,12 +334,23 @@ public class MvideoPage {
         dropDownButtonMenu.find(By.xpath(".//div[text() = ' Сначала дороже ']")).click();
     }
 
-    public void getCollectionPriceAndConwert(){
-        Iterable<SelenideElement> productPriceContainsApple = Selenide.$$x("//span[contains(@class, 'price__main-value')]").asFixedIterable();
+    public void getCollectionPriceAndConvertAndValidate() {
+        List<SelenideElement> productPriceContainsApple = Selenide.$$x("//span[contains(@class, 'price__main-value')]");
+        for (int i = 0; i<productPriceContainsApple.size(); i++){
+            var currentElement = productPriceContainsApple.get(i);
+            var nextElements = productPriceContainsApple.size()-1 == i ? null :
+                    productPriceContainsApple.get(i+1);
+
+            if (nextElements != null) {
+                int parsedCurrentElement = Integer.parseInt(currentElement.getText().replaceAll("(\\s+)|(₽)",""));
+                int parsedNextElement = Integer.parseInt(nextElements.getText().replaceAll("(\\s+)|(₽)",""));
+                assert parsedCurrentElement >= parsedNextElement;
+            }
+        }
 
     }
 
-//Для теста 5 и 6
+//Для теста 6 и 7
 //    *////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @FindBy(xpath = "//h2[contains(@class, 'login-form__header')]")
     public SelenideElement loginFormHeader;
@@ -371,7 +385,7 @@ public class MvideoPage {
         forLegalPerson.shouldBe(visible);
         assert forLegalPerson.getText().equals("Для юридических лиц");
     }
-    //Для теста 7 и 8
+    //Для теста 8 и 9
 //    *////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @FindBy(xpath = "(//div[contains(@class, 'compare-button-block')] //button)[1]")
@@ -413,6 +427,8 @@ public class MvideoPage {
     @FindBy(xpath = "(//div[contains(@class, 'wishlist-button-block ng-star-inserted')])[3]")
     public SelenideElement buttonPersonalThirdProduct;
 
+    @FindBy(xpath = "//section[contains(@class, 'wishlist-topline')]//h1")
+    public SelenideElement personalHead;
 
 
     String firstAppleProductName;
@@ -455,7 +471,7 @@ public class MvideoPage {
         return thirdAppleProductName;
     }
 
-    public void rightAddProductName(){
+    public void rightAddProductNameComparison(){
 //        assert firstNameProductInCompare.getText().equals(firstAppleProductName);
 //        assert secondNameProductInCompare.getText().equals(secondAppleProductName);
 //        assert thirdNameProductInCompare.getText().equals(thirdAppleProductName);
@@ -474,8 +490,66 @@ public class MvideoPage {
         Selenide.sleep(2000);
         buttonPersonalThirdProduct.click();
         Selenide.sleep(2000);
+    }
+    public void rightAddProductNameInPersonal(){
+        ElementsCollection namePersonalProduct = Selenide.$$x("//div[contains(@class, 'wishlist-product-info-header')]//h3");
+        namePersonalProduct.shouldHave(CollectionCondition.itemWithText(firstAppleProductName));
+        namePersonalProduct.shouldHave(CollectionCondition.itemWithText(secondAppleProductName));
+        namePersonalProduct.shouldHave(CollectionCondition.itemWithText(thirdAppleProductName));
 
     }
+    public void urlEqualsUrlPersonal(){
+        String actualUrl = WebDriverRunner.url();
+        String expectedUrl = "https://www.mvideo.ru/wish-list";
+        assert (actualUrl.contains(expectedUrl));
+    }
+    public void personalHeadNormal(){
+        personalHead.shouldBe(visible).isDisplayed();
+//        assert compareHead.getText().equals("Сравнение товаров");
+        personalHead.shouldHave(text("Избранное"));
+    }
+    //Для теста 10
+//    *////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        @FindBy (xpath = "//div[contains(@class, 'location') and contains(@class, 'ng-tns-c230-1')]")
+        public SelenideElement buttonLocation;
+
+        @FindBy (xpath = "//div[contains(@class, 'modal-wrapper__content')]")
+        public SelenideElement locationLayOut;
+
+        @FindBy (xpath = "//div[contains(@class, 'modal-wrapper__content')]//h3")
+        public SelenideElement locationLayOutHead;
+
+        @FindBy (xpath = "//li[text()=\"Краснодар\"]")
+        public SelenideElement locationKrasnodar;
+
+        @FindBy (xpath = "//span[contains(@class, 'location-text')]")
+        public SelenideElement yourLocationLabel;
+
+
+
+        public void clickButtonLocation(){
+            buttonLocation.click();
+        }
+        public void checkLocationLayout(){
+            locationLayOut.shouldBe(visible).isDisplayed();
+        }
+        public void checkLocationLayoutNotVisible(){
+            locationLayOut.shouldNotBe(visible);
+        }
+        public void checkLocationLayoutHead() {
+            locationLayOutHead.shouldBe(visible).isDisplayed();
+            locationLayOutHead.shouldHave(text("Выберите город"));
+        }
+        public void checkLocationLayoutHeadNotVisible(){
+            locationLayOutHead.shouldNotBe(visible);
+        }
+        public void clickKrasnodar() {
+            locationKrasnodar.click();
+        }
+
+        public void checkYouLocation(){
+            yourLocationLabel.shouldHave(text("Краснодар"));
+        }
 
 }
 
